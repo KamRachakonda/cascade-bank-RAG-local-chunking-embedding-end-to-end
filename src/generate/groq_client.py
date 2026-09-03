@@ -54,11 +54,21 @@ def chat_completion(
         "stream": stream,
     }
     resolved_model = kwargs["model"]
-    if not str(resolved_model).startswith("openai/gpt-oss-"):
+    if str(resolved_model).startswith("openai/gpt-oss-"):
+        # GPT-OSS uses part of the completion budget for internal reasoning.
+        # Keep that bounded so the user-facing answer is not truncated.
+        kwargs["reasoning_effort"] = "medium"
+    else:
         kwargs["temperature"] = (
             cfg.generation.temperature if temperature is None else temperature
         )
     if stream:
         return _create_completion(client, **kwargs)
     response = _create_completion(client, **kwargs)
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    if not content:
+        raise RuntimeError(
+            "Groq returned no user-facing answer. Increase generation.max_tokens "
+            "if the response ended before answer generation."
+        )
+    return content

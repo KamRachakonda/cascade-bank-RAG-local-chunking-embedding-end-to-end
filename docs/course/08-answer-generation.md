@@ -65,7 +65,7 @@ the very last "make it read like an answer" step needs a key.
     (`wait_exponential(multiplier=1, min=1, max=20)`).
   - `chat_completion(messages, model=None, temperature=None,
     max_tokens=None, stream=False) -> str | Iterable` — resolves any unset
-    arguments from `cfg.generation.*` (`model: openai/gpt-oss-120b`,
+    arguments from `cfg.generation.*` (`model: openai/gpt-oss-20b`,
     `temperature: 0.2`, `max_tokens: 800`), then calls
     `client.chat.completions.create(...)`. Returns the plain response text
     (`resp.choices[0].message.content`) when `stream=False`, or the raw

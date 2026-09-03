@@ -297,7 +297,7 @@
 
   <header>
     <h1>Cascade Bank RAG — rag-local-demo</h1>
-    <p>Architecture diagram · hover nodes for detail · local embed/rerank + Groq (openai/gpt-oss-120b)</p>
+    <p>Architecture diagram · hover nodes for detail · local embed/rerank + Groq (openai/gpt-oss-20b)</p>
   </header>
 
   <div class="legend">
@@ -464,7 +464,7 @@
       <g class="node-purple clickable" id="n-answer" data-tt="answer">
         <rect x="100" y="796" width="260" height="58" rx="8" />
         <text class="label" x="230" y="819" text-anchor="middle">answer_synthesis</text>
-        <text class="sublabel" x="230" y="836" text-anchor="middle">Groq · openai/gpt-oss-120b, cited answer</text>
+        <text class="sublabel" x="230" y="836" text-anchor="middle">Groq · openai/gpt-oss-20b, cited answer</text>
       </g>
 
       <!-- NODE 9b: fallback -->
@@ -583,7 +583,7 @@
       },
       answer: {
         title: 'answer_synthesis',
-        body: 'src/generate/answer_synthesis.py + groq_client.py call Groq\'s OpenAI-compatible chat endpoint with <span class="tt-code">openai/gpt-oss-120b</span> (temperature omitted for GPT-OSS, max_tokens 800) to turn the reranked chunks into a cited answer.'
+        body: 'src/generate/answer_synthesis.py + groq_client.py call Groq\'s OpenAI-compatible chat endpoint with <span class="tt-code">openai/gpt-oss-20b</span> (temperature omitted for GPT-OSS, max_tokens 800) to turn the reranked chunks into a cited answer.'
       },
       fallback: {
         title: 'fallback mode',

@@ -40,4 +40,4 @@ def test_generation_is_groq():
     cfg = get_config()
     assert cfg.generation.provider == "groq"
     assert cfg.generation.base_url == "https://api.groq.com/openai/v1"
-    assert cfg.generation.model == "openai/gpt-oss-120b"
+    assert cfg.generation.model == "openai/gpt-oss-20b"

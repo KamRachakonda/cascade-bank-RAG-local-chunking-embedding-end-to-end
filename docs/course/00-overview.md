@@ -43,7 +43,7 @@ readable Python module you can run, break, and inspect.
  ┌──────────────┐   ┌───────────────┐   ┌───────────────┐   ┌───────▼────────┐
  │ 8. UI        │◀──│ 7. GENERATE   │◀──│ 6. RERANK     │◀──│ 5. CHROMA      │
  │ Chainlit chat│   │ Groq    │   │ local cross-  │   │ persistent     │
- │ (retrieve/   │   │ (openai/gpt-oss-120b),   │   │ encoder       │   │ vector store   │
+ │ (retrieve/   │   │ (openai/gpt-oss-20b),    │   │ encoder       │   │ vector store   │
  │ rerank/answer│   │ cited answer  │   │ re-scores     │   │ (unified       │
  │ panels)      │   │ or fallback   │   │ shortlist     │   │ collection)    │
  └──────────────┘   └───────────────┘   └───────▲───────┘   └───────┬────────┘
@@ -67,7 +67,7 @@ for embeddings or reranking — only for the final answer-generation step.
 |---|---|---|---|
 | Embeddings | **Local** (CPU, sentence-transformers) | `BAAI/bge-small-en-v1.5` (384-dim) | Groq has no embeddings endpoint — it is a chat-completions proxy over hosted LLMs, not an embeddings provider. Even if it did, embedding every chunk of a corpus over a network API is slow and costs money per call; a small local bi-encoder does it in milliseconds on CPU, for free, offline, and deterministically (good for teaching and for the on-disk cache in `src/embed/cache.py`). |
 | Reranking | **Local** (CPU, sentence-transformers `CrossEncoder`) | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Cross-encoder rerankers score every (query, passage) pair jointly, which is much more accurate than bi-encoder cosine similarity but too slow to run over an entire corpus. Running it locally over just the retrieved shortlist (`cfg.search.top_k` candidates) is fast and needs no API key at all. |
-| Answer generation | **Groq** | `openai/gpt-oss-120b` | This is the one place an actual large language model is required to turn retrieved chunks into fluent prose with citations. Groq gives access to many hosted models behind a single `GROQ_API_KEY` and an OpenAI-compatible API, so the whole demo needs **exactly one** external credential. |
+| Answer generation | **Groq** | `openai/gpt-oss-20b` | This is the one place an actual large language model is required to turn retrieved chunks into fluent prose with citations. Groq gives access to many hosted models behind a single `GROQ_API_KEY` and an OpenAI-compatible API, so the whole demo needs **exactly one** external credential. |
 
 So: **two local models, one API key.** This keeps ingestion (generation +
 extraction + chunking + embedding + storage) entirely offline and free to
