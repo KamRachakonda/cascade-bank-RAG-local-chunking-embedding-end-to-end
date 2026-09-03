@@ -50,10 +50,14 @@ def chat_completion(
     kwargs = {
         "model": model or cfg.generation.model,
         "messages": messages,
-        "temperature": cfg.generation.temperature if temperature is None else temperature,
         "max_tokens": cfg.generation.max_tokens if max_tokens is None else max_tokens,
         "stream": stream,
     }
+    resolved_model = kwargs["model"]
+    if not str(resolved_model).startswith("openai/gpt-oss-"):
+        kwargs["temperature"] = (
+            cfg.generation.temperature if temperature is None else temperature
+        )
     if stream:
         return _create_completion(client, **kwargs)
     response = _create_completion(client, **kwargs)
