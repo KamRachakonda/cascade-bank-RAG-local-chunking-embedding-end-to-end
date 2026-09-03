@@ -22,7 +22,7 @@ rather than a framework black box, so it doubles as a course (see
  ┌──────────────┐   ┌───────────────┐   ┌───────────────┐   ┌───────▼────────┐
  │ 8. UI        │◀──│ 7. GENERATE   │◀──│ 6. RERANK     │◀──│ 5. CHROMA      │
  │ Chainlit chat│   │ Groq    │   │ local cross-  │   │ persistent     │
- │ (retrieve/   │   │ (openai/gpt-oss-20b),    │   │ encoder       │   │ vector store   │
+ │ (retrieve/   │   │ (openai/gpt-oss-120b),   │   │ encoder       │   │ vector store   │
  │ rerank/answer│   │ cited answer  │   │ re-scores     │   │ (unified       │
  │ panels)      │   │ or fallback   │   │ shortlist     │   │ collection)    │
  └──────────────┘   └───────────────┘   └───────▲───────┘   └───────┬────────┘
@@ -46,7 +46,7 @@ calls Groq for the final answer:
 |---|---|---|---|
 | Embeddings | **Local** (CPU, sentence-transformers) | `BAAI/bge-small-en-v1.5` (384-dim) | **Groq has no embeddings endpoint** — it is a chat-completions proxy over hosted LLMs, not an embeddings provider. This is the deliberate correction to an earlier "everything through Groq" spec: embeddings must be local (or another dedicated embeddings API) because there's simply no Groq route to call for them. A small local bi-encoder embeds every chunk in milliseconds on CPU, for free, offline, and deterministically — which also makes the on-disk embedding cache (`src/embed/cache.py`) possible. |
 | Reranking | **Local** (CPU, sentence-transformers `CrossEncoder`) | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Cross-encoders score every (query, passage) pair jointly — much more accurate than bi-encoder cosine similarity, but too slow to run over a whole corpus. Running it only over the retrieved shortlist is fast, local, and needs no API key. |
-| Answer generation | **Groq** | `openai/gpt-oss-20b` | The one place an LLM is actually required, to turn retrieved chunks into fluent, cited prose. Groq provides an OpenAI-compatible chat endpoint over many hosted models behind a single credential. |
+| Answer generation | **Groq** | `openai/gpt-oss-120b` | The one place an LLM is actually required, to turn retrieved chunks into fluent, cited prose. Groq provides an OpenAI-compatible chat endpoint over many hosted models behind a single credential. |
 
 Net effect: **two local models, one API key** (`GROQ_API_KEY`).
 Ingestion (generate → extract → chunk → embed → store) is entirely offline
@@ -119,7 +119,7 @@ python -m src.generate.answer_synthesis --query "..."          # search + rerank
 | `vector_store.collection` | Chroma collection name (`cascade_docs`) |
 | `search.top_k` | Number of candidates returned by semantic search (default 10) |
 | `rerank.model` / `top_n` | Local cross-encoder model and how many results survive reranking (default 4) |
-| `generation.provider` / `base_url` / `model` / `temperature` / `max_tokens` | Groq chat settings (`openai/gpt-oss-20b`) |
+| `generation.provider` / `base_url` / `model` / `temperature` / `max_tokens` | Groq chat settings (`openai/gpt-oss-120b`) |
 
 Secrets (just `GROQ_API_KEY`) live in `.env`, loaded by
 `src/config.get_config()` alongside `config.yaml`.
@@ -174,7 +174,7 @@ This pipeline has been run end-to-end and validated:
 
 - Full pipeline produced **348 chunks** in the Chroma collection `cascade_docs`: **206 pdf / 40 sop / 102 csv**.
 - Semantic search + cross-encoder rerank confirmed working against the populated store.
-- Live answer generation via Groq (`openai/gpt-oss-20b`) confirmed working with cited output.
+- Live answer generation via Groq (`openai/gpt-oss-120b`) confirmed working with cited output.
 - Chainlit UI boots clean (`chainlit run src/ui/app.py`).
 
 ## Security
